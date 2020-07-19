@@ -1,10 +1,21 @@
 #include "MatlabDataArray.hpp"
 #include "MatlabEngine.hpp"
 #include <iostream>
+#include <functional>
+#include <algorithm>
 
 #include "PID_controller.h"
 
 #define NUM_TEST 1000
+
+
+template <typename UnaryFunctionT /*= std::less<double>*/ >
+int count_all(const std::vector<double>& vec, UnaryFunctionT func )
+{
+    return std::count_if( vec.begin(), vec.end(), func );
+}
+bool is_nan (double d) { return std::isnan(d); }
+bool is_inf (double d) { return std::isinf(d); }
 
 
 int main() {
@@ -42,6 +53,14 @@ int main() {
     }
     std::cout << "Tests completed, plotting results" << std::endl;
 
+    // Check NaN and Inf values
+    if (count_all(test_error, is_nan)>0) {
+        std::cout << "Test aborted, there are NaN values in the error" << std::endl;
+    }
+    if (count_all(test_error, is_inf)>0) {
+        std::cout << "Test aborted, there are Inf values in the error" << std::endl;
+    }
+
     // Plot test results
     matlab::data::ArrayFactory factory;
     matlab::data::TypedArray<double> m_error = factory.createArray({NUM_TEST,1}, test_error.begin(), test_error.end());
@@ -49,6 +68,9 @@ int main() {
     matlabPtr->setVariable(u"error", std::move(m_error));
     matlabPtr->eval(u"figure,bar(1:1:length(error),error),grid");
     matlabPtr->eval(u"pause");
+
+    // Terminate MATLAB session
+    matlab::engine::terminateEngineClient();
 
 	return 0;
 }

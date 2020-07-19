@@ -15,6 +15,11 @@ test_discrete_tf: test_discrete_tf.o
 test_discrete_tf.o: test_discrete_tf.cpp
 	$(CC) -c $(CCFLAGS) test_discrete_tf.cpp -o test_discrete_tf.o
 
+test_discrete_ss: test_discrete_ss.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_discrete_ss test_discrete_ss.o $(CCLNFLAGS)
+test_discrete_ss.o: test_discrete_ss.cpp
+	$(CC) -c $(CCFLAGS) test_discrete_ss.cpp -o test_discrete_ss.o
+
 test_FIR_filter: test_FIR_filter.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_FIR_filter test_FIR_filter.o $(CCLNFLAGS)
 test_FIR_filter.o: test_FIR_filter.cpp
@@ -25,8 +30,8 @@ test_PID_controller: test_PID_controller.o
 test_PID_controller.o: test_PID_controller.cpp
 	$(CC) -c $(CCFLAGS) test_PID_controller.cpp -o test_PID_controller.o
 
-all: test_discrete_tf test_FIR_filter test_PID_controller
+all: test_discrete_tf test_discrete_ss test_FIR_filter test_PID_controller
 
 clean:
 	@rm -rf *~ *.o
-	@rm -rf test_discrete_tf test_FIR_filter test_PID_controller
+	@rm -rf test_discrete_tf test_discrete_ss test_FIR_filter test_PID_controller
