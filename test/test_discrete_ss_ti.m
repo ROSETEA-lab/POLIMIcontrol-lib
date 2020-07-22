@@ -21,5 +21,7 @@ end
 t = (0:1:size(in,1)-1)';
 
 % Simulate filter
-output = lsim(ss(A,B,C,D,-1),in,t);
-state  = lsim(ss(A,B,eye(n,n),zeros(n,m),-1),in,t);
+initial_state = rand(n,1);
+
+output = lsim(ss(A,B,C,D,-1),in,t,initial_state);
+state  = lsim(ss(A,B,eye(n,n),zeros(n,m),-1),in,t,initial_state);

@@ -30,10 +30,10 @@ int main() {
     std::unique_ptr<MATLABEngine> matlabPtr = startMATLAB();
 
     // Execute tests
-    std::cout << "Executing " << NUM_TEST << " tests on discrete_tf class" << std::endl;
+    std::cout << "Executing " << NUM_TEST << " tests on discrete_ss_ti class" << std::endl;
     for (auto k=0; k<NUM_TEST; k++) {
         // Simulate filter in Matlab
-        matlabPtr->eval(u"test_discrete_ss;");
+        matlabPtr->eval(u"test_discrete_ss_ti;");
 
         // Get system data from Matlab
         matlab::data::TypedArray<double> n = matlabPtr->getVariable(u"n");
@@ -72,6 +72,12 @@ int main() {
             }
         }
 
+        Eigen::VectorXd initial_state = Eigen::VectorXd::Zero((int)n[0]);
+        matlab::data::TypedArray<double> m_initial_state = matlabPtr->getVariable(u"initial_state");
+        for (auto i=0; i<(int)n[0]; i++) {
+            initial_state(i) = m_initial_state[i];
+        }
+
         matlab::data::TypedArray<double> m_in = matlabPtr->getVariable(u"in");
         matlab::data::ArrayDimensions m_in_size = m_in.getDimensions();
         Eigen::MatrixXd input = Eigen::MatrixXd::Zero((int)m[0],m_in_size.at(0));
@@ -85,12 +91,12 @@ int main() {
         matlab::data::TypedArray<double> m_state  = matlabPtr->getVariable(u"state");
 
         // Simulate system in C++ and compare
-        discrete_ss ssd(A, B, C, D);
+        discrete_ss ssd(A, B, C, D, initial_state);
 
         Eigen::VectorXd output, state;
         std::vector<double> state_error, output_error;
 
-        for (auto i=0; i<input.cols()-1; i++) {
+        for (auto i=0; i<input.cols(); i++) {
             Eigen::VectorXd tmp_in((int)m[0]);
             for (auto k=0; k<(int)m[0]; k++) {
                 tmp_in(k) = input(k,i);
@@ -102,7 +108,7 @@ int main() {
 
             double state_error_norm = 0.0;
             for (auto k=0; k<(int)n[0]; k++) {
-                state_error_norm += std::pow(state(k)-m_state[i+1][k],2);
+                state_error_norm += std::pow(state(k)-m_state[i][k],2);
             }
             state_error.push_back(std::sqrt(state_error_norm));
 
