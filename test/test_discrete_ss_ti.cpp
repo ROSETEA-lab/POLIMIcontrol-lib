@@ -32,6 +32,10 @@ int main() {
     // Execute tests
     std::cout << "Executing " << NUM_TEST << " tests on discrete_ss_ti class" << std::endl;
     for (auto k=0; k<NUM_TEST; k++) {
+        // Initialize error vectors
+        test_state_error.assign(NUM_TEST, 0.0);
+        test_output_error.assign(NUM_TEST, 0.0);
+
         // Simulate filter in Matlab
         matlabPtr->eval(u"test_discrete_ss_ti;");
 
@@ -96,38 +100,73 @@ int main() {
         Eigen::VectorXd output, state;
         std::vector<double> state_error, output_error;
 
+        bool nan_flag = false;
         for (auto i=0; i<input.cols(); i++) {
-            Eigen::VectorXd tmp_in((int)m[0]);
-            for (auto k=0; k<(int)m[0]; k++) {
-                tmp_in(k) = input(k,i);
-            }
-
-            ssd.evaluate(tmp_in);
+            ssd.evaluate(input.col(i));
             ssd.get_state(state);
             ssd.get_output(output);
 
             double state_error_norm = 0.0;
-            for (auto k=0; k<(int)n[0]; k++) {
-                state_error_norm += std::pow(state(k)-m_state[i][k],2);
+            for (auto ss=0; ss<(int)n[0]; ss++) {
+                if (std::isnan(m_state[i][ss])) {
+                    nan_flag = true;
+                    std::cout << "Test " << k << ": at time " << i << " Matlab state is NaN!" << std::endl;
+                }
+                if (std::isnan(state(ss))) {
+                    nan_flag = true;
+                    std::cout << "Test " << k << ": at time " << i << " C++ state is NaN!" << std::endl;
+                }
+
+                if (nan_flag) {
+                    break;
+                }
+                else {
+                    state_error_norm += std::pow(state(ss)-m_state[i][ss],2);
+                }
             }
-            state_error.push_back(std::sqrt(state_error_norm));
 
             double output_error_norm = 0.0;
-            for (auto k=0; k<(int)p[0]; k++) {
-                output_error_norm += std::pow(output(k)-m_output[i][k],2);
+            for (auto out=0; out<(int)p[0]; out++) {
+                if (std::isnan(m_output[i][out])) {
+                    nan_flag = true;
+                    std::cout << "Test " << k << ": at time " << i << " Matlab output is NaN!" << std::endl;
+                }
+                if (std::isnan(output(out))) {
+                    nan_flag = true;
+                    std::cout << "Test " << k << ": at time " << i << " C++ output is NaN!" << std::endl;
+                }
+
+                if (nan_flag) {
+                    break;
+                }
+                else {
+                    output_error_norm += std::pow(output(out)-m_output[i][out],2);
+                }
             }
-            output_error.push_back(std::sqrt(output_error_norm));
+
+            if (nan_flag) {
+                break;
+            }
+            else {
+                state_error.push_back(std::sqrt(state_error_norm));
+                output_error.push_back(std::sqrt(output_error_norm));
+            }
         }
 
-        test_state_error.at(k) = *std::max_element(state_error.begin(), state_error.end());
-        test_output_error.at(k) = *std::max_element(output_error.begin(), output_error.end());
+        if (nan_flag) {
+            std::cout << "Test " << k << " aborted, due to NaN values!" << std::endl << std::endl;
+
+            test_state_error.at(k)  = 0.0;
+            test_output_error.at(k) = 0.0;
+        }
+        else {
+            test_state_error.at(k)  = *std::max_element(state_error.begin(), state_error.end());
+            test_output_error.at(k) = *std::max_element(output_error.begin(), output_error.end());
+        }
     }
     std::cout << "Tests completed, plotting results" << std::endl;
 
     // Check NaN and Inf values
-    if ((count_all(test_state_error, is_nan)>0) || (count_all(test_output_error, is_nan)>0)) {
-        std::cout << "Test aborted, there are NaN values in the errors" << std::endl;
-    }
     if ((count_all(test_state_error, is_inf)>0) || (count_all(test_output_error, is_inf)>0)) {
         std::cout << "Test aborted, there are Inf values in the errors" << std::endl;
     }

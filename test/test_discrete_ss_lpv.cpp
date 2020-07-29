@@ -19,19 +19,36 @@ bool is_nan (double d) { return std::isnan(d); }
 bool is_inf (double d) { return std::isinf(d); }
 
 Eigen::MatrixXd A0, A1, B0, B1, C0, C1, D0, D1;
+std::vector<Eigen::MatrixXd> Ap, Bp, Cp, Dp;
 
 // Time-varying system matrix computation
 void compute_matrix_A(Eigen::MatrixXd& A, int k, const Eigen::VectorXd& params) {
     A = A0+pow((double)k,0.5)*A1;
+
+    for (auto i=0; i<params.size(); i++) {
+        A += Ap.at(i)*params(i);
+    }
 }
 void compute_matrix_B(Eigen::MatrixXd& B, int k, const Eigen::VectorXd& params) {
     B = B0+pow((double)k,0.5)*B1;
+
+    for (auto i=0; i<params.size(); i++) {
+        B += Bp.at(i)*params(i);
+    }
 }
 void compute_matrix_C(Eigen::MatrixXd& C, int k, const Eigen::VectorXd& params) {
     C = C0+pow((double)k,0.5)*C1;
+
+    for (auto i=0; i<params.size(); i++) {
+        C += Cp.at(i)*params(i);
+    }
 }
 void compute_matrix_D(Eigen::MatrixXd& D, int k, const Eigen::VectorXd& params) {
     D = D0+pow((double)k,0.5)*D1;
+
+    for (auto i=0; i<params.size(); i++) {
+        D += Dp.at(i)*params(i);
+    }
 }
 
 
@@ -46,19 +63,20 @@ int main() {
     std::unique_ptr<MATLABEngine> matlabPtr = startMATLAB();
 
     // Execute tests
-    std::cout << "Executing " << NUM_TEST << " tests on discrete_ss_tv class" << std::endl;
+    std::cout << "Executing " << NUM_TEST << " tests on discrete_ss_lpv class" << std::endl;
     for (auto k=0; k<NUM_TEST; k++) {
         // Initialize error vectors
         test_state_error.assign(NUM_TEST, 0.0);
         test_output_error.assign(NUM_TEST, 0.0);
 
         // Simulate filter in Matlab
-        matlabPtr->eval(u"test_discrete_ss_tv;");
+        matlabPtr->eval(u"test_discrete_ss_lpv;");
 
         // Get system data from Matlab
         matlab::data::TypedArray<double> n = matlabPtr->getVariable(u"n");
         matlab::data::TypedArray<double> m = matlabPtr->getVariable(u"m");
         matlab::data::TypedArray<double> p = matlabPtr->getVariable(u"p");
+        matlab::data::TypedArray<double> num_param = matlabPtr->getVariable(u"num_param");
 
         A0 = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
         matlab::data::TypedArray<double> m_A0 = matlabPtr->getVariable(u"A0");
@@ -73,6 +91,17 @@ int main() {
             for (auto j=0; j<(int)n[0]; j++) {
                 A1(i,j) = m_A1[i][j];
             }
+        }
+        Ap.clear();
+        matlab::data::TypedArray<double> m_Ap = matlabPtr->getVariable(u"Ap");
+        for (auto pm=0; pm<(int)num_param[0]; pm++) {
+            Eigen::MatrixXd Apk = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
+            for (auto i=0; i<(int)n[0]; i++) {
+                for (auto j=0; j<(int)n[0]; j++) {
+                    Apk(i,j) = m_Ap[i][j][pm];
+                }
+            }
+            Ap.push_back(Apk);
         }
 
         B0 = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
@@ -89,6 +118,17 @@ int main() {
                 B1(i,j) = m_B1[i][j];
             }
         }
+        Bp.clear();
+        matlab::data::TypedArray<double> m_Bp = matlabPtr->getVariable(u"Bp");
+        for (auto pm=0; pm<(int)num_param[0]; pm++) {
+            Eigen::MatrixXd Bpk = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
+            for (auto i=0; i<(int)n[0]; i++) {
+                for (auto j=0; j<(int)m[0]; j++) {
+                    Bpk(i,j) = m_Bp[i][j][pm];
+                }
+            }
+            Bp.push_back(Bpk);
+        }
 
         C0 = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
         matlab::data::TypedArray<double> m_C0 = matlabPtr->getVariable(u"C0");
@@ -104,6 +144,17 @@ int main() {
                 C1(i,j) = m_C1[i][j];
             }
         }
+        Cp.clear();
+        matlab::data::TypedArray<double> m_Cp = matlabPtr->getVariable(u"Cp");
+        for (auto pm=0; pm<(int)num_param[0]; pm++) {
+            Eigen::MatrixXd Cpk = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
+            for (auto i=0; i<(int)p[0]; i++) {
+                for (auto j=0; j<(int)n[0]; j++) {
+                    Cpk(i,j) = m_Cp[i][j][pm];
+                }
+            }
+            Cp.push_back(Cpk);
+        }
 
         D0 = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
         matlab::data::TypedArray<double> m_D0 = matlabPtr->getVariable(u"D0");
@@ -118,6 +169,17 @@ int main() {
             for (auto j=0; j<(int)m[0]; j++) {
                 D1(i,j) = m_D1[i][j];
             }
+        }
+        Dp.clear();
+        matlab::data::TypedArray<double> m_Dp = matlabPtr->getVariable(u"Dp");
+        for (auto pm=0; pm<(int)num_param[0]; pm++) {
+            Eigen::MatrixXd Dpk = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
+            for (auto i=0; i<(int)p[0]; i++) {
+                for (auto j=0; j<(int)m[0]; j++) {
+                    Dpk(i,j) = m_Dp[i][j][pm];
+                }
+            }
+            Dp.push_back(Dpk);
         }
 
         Eigen::VectorXd initial_state = Eigen::VectorXd::Zero((int)n[0]);
@@ -135,18 +197,27 @@ int main() {
             }
         }
 
+        matlab::data::TypedArray<double> m_param = matlabPtr->getVariable(u"param");
+        matlab::data::ArrayDimensions m_param_size = m_param.getDimensions();
+        Eigen::MatrixXd param = Eigen::MatrixXd::Zero((int)num_param[0],m_param_size.at(0));
+        for (auto i=0; i<m_param_size.at(0); i++) {
+            for (auto j=0; j<(int)num_param[0]; j++) {
+                param(j,i) = m_param[i][j];
+            }
+        }
+
         matlab::data::TypedArray<double> m_output = matlabPtr->getVariable(u"output");
         matlab::data::TypedArray<double> m_state  = matlabPtr->getVariable(u"state");
 
         // Simulate system in C++ and compare
-        discrete_ss ssd(compute_matrix_A, compute_matrix_B, compute_matrix_C, compute_matrix_D, 0, initial_state);
+        discrete_ss ssd(compute_matrix_A, compute_matrix_B, compute_matrix_C, compute_matrix_D, (int)num_param[0], initial_state);
 
         Eigen::VectorXd output, state;
         std::vector<double> state_error, output_error;
 
         bool nan_flag = false;
         for (auto i=0; i<input.cols(); i++) {
-            ssd.evaluate(input.col(i));
+            ssd.evaluate(input.col(i),param.col(i));
             ssd.get_state(state);
             ssd.get_output(output);
 
