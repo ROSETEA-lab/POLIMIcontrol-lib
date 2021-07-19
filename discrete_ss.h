@@ -7,10 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Discrete state-space system class
 //
-// Implements the state-space form of a linear time-invariant discrete time system
+// Implements the state-space form of a linear time-invariant/time-variant/LPV discrete time system
 //
-// x(k+1) = A x(k) + B u(k)
-// y(k)   = C x(k) + D u(k)
+// x(k+1) = A(k,theta) x(k) + B(k,theta) u(k)
+// y(k)   = C(k,theta) x(k) + D(k,theta) u(k)
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
