@@ -20,7 +20,7 @@ for k=1:m
 end
 t = (0:1:size(in,1)-1)';
 
-% Simulate filter
+% Simulate system
 initial_state = rand(n,1);
 
 output = lsim(ss(A,B,C,D,-1),in,t,initial_state);

@@ -1,7 +1,7 @@
 clear all;
 
 % Create the parameter vector
-t = (0:0.001:5)';
+t = (0:0.001:50)';
 
 num_param = max(round(5*rand(1)),1);
 for k=1:num_param

@@ -20,6 +20,11 @@ test_discrete_ss_ti: test_discrete_ss_ti.o
 test_discrete_ss_ti.o: test_discrete_ss_ti.cpp
 	$(CC) -c $(CCFLAGS) test_discrete_ss_ti.cpp -o test_discrete_ss_ti.o
 
+test_continuous_ss_ti: test_continuous_ss_ti.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_ti test_continuous_ss_ti.o $(CCLNFLAGS)
+test_continuous_ss_ti.o: test_continuous_ss_ti.cpp
+	$(CC) -c $(CCFLAGS) test_continuous_ss_ti.cpp -o test_continuous_ss_ti.o
+
 test_discrete_ss_tv: test_discrete_ss_tv.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_discrete_ss_tv test_discrete_ss_tv.o $(CCLNFLAGS)
 test_discrete_ss_tv.o: test_discrete_ss_tv.cpp
@@ -40,9 +45,9 @@ test_PID_controller: test_PID_controller.o
 test_PID_controller.o: test_PID_controller.cpp
 	$(CC) -c $(CCFLAGS) test_PID_controller.cpp -o test_PID_controller.o
 
-all: test_discrete_tf test_discrete_ss_ti test_discrete_ss_tv test_discrete_ss_lpv test_FIR_filter test_PID_controller
+all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_discrete_ss_tv test_discrete_ss_lpv test_FIR_filter test_PID_controller
 
 clean:
 	@rm -rf *~ *.o
-	@rm -rf test_discrete_tf test_discrete_ss_ti test_discrete_ss_tv test_discrete_ss_lpv test_FIR_filter test_PID_controller
+	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_discrete_ss_tv test_discrete_ss_lpv test_FIR_filter test_PID_controller
 

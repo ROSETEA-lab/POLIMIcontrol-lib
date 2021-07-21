@@ -7,7 +7,9 @@
 
 #include "discrete_ss.h"
 
-#define NUM_TEST 1000
+#define NUM_TEST        1000
+#define STATE_ERR_THD   1
+#define OUTPUT_ERR_THD  1
 
 
 template <typename UnaryFunctionT /*= std::less<double>*/ >
@@ -43,16 +45,14 @@ int main() {
     std::vector<double> test_output_error(NUM_TEST, 0.0);
 
     // Start MATLAB engine synchronously
-    std::unique_ptr<MATLABEngine> matlabPtr = startMATLAB();
+    std::vector<String> optionVec;
+    optionVec.push_back(u"-nodesktop -nosplash");
+    std::unique_ptr<MATLABEngine> matlabPtr = startMATLAB(optionVec);
 
     // Execute tests
     std::cout << "Executing " << NUM_TEST << " tests on discrete_ss_tv class" << std::endl;
     for (auto k=0; k<NUM_TEST; k++) {
-        // Initialize error vectors
-        test_state_error.assign(NUM_TEST, 0.0);
-        test_output_error.assign(NUM_TEST, 0.0);
-
-        // Simulate filter in Matlab
+        // Simulate system in Matlab
         matlabPtr->eval(u"test_discrete_ss_tv;");
 
         // Get system data from Matlab
@@ -165,7 +165,7 @@ int main() {
                     break;
                 }
                 else {
-                    state_error_norm += std::pow(state(ss)-m_state[i][ss],2);
+                    state_error_norm += std::pow((state(ss)-m_state[i][ss])/m_state[i][ss],2)*100.0;
                 }
             }
 
@@ -184,7 +184,7 @@ int main() {
                     break;
                 }
                 else {
-                    output_error_norm += std::pow(output(out)-m_output[i][out],2);
+                    output_error_norm += std::pow((output(out)-m_output[i][out])/m_output[i][out],2)*100.0;
                 }
             }
 
@@ -197,6 +197,7 @@ int main() {
             }
         }
 
+        // Skip this test in case of NaN or record the state and output errors
         if (nan_flag) {
             std::cout << "Test " << k << " aborted, due to NaN values!" << std::endl << std::endl;
 
@@ -206,6 +207,13 @@ int main() {
         else {
             test_state_error.at(k)  = *std::max_element(state_error.begin(), state_error.end());
             test_output_error.at(k) = *std::max_element(output_error.begin(), output_error.end());
+
+            // In case the error exceeds the threshold, save in a mat file all the data
+            if ((test_state_error.at(k)>STATE_ERR_THD) || (test_output_error.at(k)>OUTPUT_ERR_THD)) {
+                std::string matlabLine;
+                matlabLine = "save('test_discrete_ss_tv_" + std::to_string(k+1) + ".mat','n','m','p','A0','A1','B0','B1','C0','C1','D0','D1','initial_state','t','in','state','output');";
+                matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
+            }
         }
     }
     std::cout << "Tests completed, plotting results" << std::endl;
@@ -222,9 +230,10 @@ int main() {
     matlabPtr->eval(u"clear all; close all;");
     matlabPtr->setVariable(u"state_error", std::move(m_state_error));
     matlabPtr->setVariable(u"output_error", std::move(m_output_error));
-    matlabPtr->eval(u"figure,bar(1:1:length(state_error),state_error),grid");
-    matlabPtr->eval(u"figure,bar(1:1:length(output_error),output_error),grid");
-    matlabPtr->eval(u"pause");
+    matlabPtr->eval(u"figure('visible', 'off'),bar(1:1:length(state_error),state_error),grid,xlabel('Test number'),ylabel('Percentage error')");
+    matlabPtr->eval(u"print -djpeg test_discrete_ss_tv_state_error.jpg");
+    matlabPtr->eval(u"figure('visible', 'off'),bar(1:1:length(output_error),output_error),grid,xlabel('Test number'),ylabel('Percentage error')");
+    matlabPtr->eval(u"print -djpeg test_discrete_ss_tv_output_error.jpg");
 
     // Terminate MATLAB session
     matlab::engine::terminateEngineClient();
