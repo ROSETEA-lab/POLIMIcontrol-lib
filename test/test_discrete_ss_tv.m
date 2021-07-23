@@ -19,8 +19,10 @@ D1 = round(2*(rand(p,m)-0.5));
 
 % Create the input signal
 t = (0:0.001:50)';
+
+in = zeros(length(t),m);
 for k=1:m
-    in(:,m) = chirp(t,0,t(end),500)';
+    in(:,k) = chirp(t,0,t(end),500)';
 end
 t = (0:1:size(in,1)-1)';
 
