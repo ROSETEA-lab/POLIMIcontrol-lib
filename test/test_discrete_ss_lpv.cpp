@@ -236,7 +236,7 @@ int main() {
                     break;
                 }
                 else {
-                    state_error_norm += std::sqrt(std::pow((state(ss)-m_state[i][ss])/m_state[i][ss],2))*(100.0/input.cols());
+                    state_error_norm += std::sqrt(std::pow((state(ss)-m_state[i][ss])/m_state[i][ss],2))*(100.0/(input.cols()*(int)n[0]));
                 }
             }
 
@@ -255,7 +255,7 @@ int main() {
                     break;
                 }
                 else {
-                    output_error_norm += std::sqrt(std::pow((output(out)-m_output[i][out])/m_output[i][out],2))*(100.0/input.cols());
+                    output_error_norm += std::sqrt(std::pow((output(out)-m_output[i][out])/m_output[i][out],2))*(100.0/(input.cols()*(int)p[0]));
                 }
             }
 
