@@ -29,12 +29,15 @@ class continuous_ss
         bool extern_matrix_computation;
         typedef void (*compute_matrix)(Eigen::MatrixXd&,double,const Eigen::VectorXd&);
         compute_matrix compute_matrix_A, compute_matrix_B, compute_matrix_C, compute_matrix_D;
+        typedef void (*compute_matrices)(Eigen::MatrixXd&,Eigen::MatrixXd&,Eigen::MatrixXd&,Eigen::MatrixXd&,double,const Eigen::VectorXd&);
+        compute_matrices compute_matrices_ABCD;
 
     public:
         continuous_ss(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B, const Eigen::MatrixXd& C, const Eigen::MatrixXd& D, const double sampling_time);
         continuous_ss(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B, const Eigen::MatrixXd& C, const Eigen::MatrixXd& D, const double sampling_time, const Eigen::VectorXd initial_state);
 
         continuous_ss(const compute_matrix pMatrix_A, const compute_matrix pMatrix_B, const compute_matrix pMatrix_C, const compute_matrix pMatrix_D, const double sampling_time, const int num_param, const Eigen::VectorXd& initial_state);
+        continuous_ss(const compute_matrices pMatrices_ABCD, const double sampling_time, const int num_param, const Eigen::VectorXd& initial_state);
 
         ~continuous_ss();
 

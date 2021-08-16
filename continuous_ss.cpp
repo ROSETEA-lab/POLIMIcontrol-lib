@@ -141,6 +141,8 @@ continuous_ss::continuous_ss(const compute_matrix pMatrix_A, const compute_matri
     this->compute_matrix_C = pMatrix_C;
     this->compute_matrix_D = pMatrix_D;
 
+    this->compute_matrices_ABCD = NULL;
+
     this->num_param = num_param;
 
     this->extern_matrix_computation = true;
@@ -154,6 +156,37 @@ continuous_ss::continuous_ss(const compute_matrix pMatrix_A, const compute_matri
     compute_matrix_B(B, time, params);
     compute_matrix_C(C, time, params);
     compute_matrix_D(D, time, params);
+
+    n = A.rows();
+    m = B.cols();
+    p = C.rows();
+
+    // Initialize state vectors
+    state      = initial_state;
+    state_next = Eigen::VectorXd::Zero(n);
+    output     = Eigen::VectorXd::Zero(p);
+}
+
+continuous_ss::continuous_ss(const compute_matrices pMatrices_ABCD, const double sampling_time, const int num_param, const Eigen::VectorXd& initial_state)
+{
+    // Initialize pointer to external function computing system matrices
+    this->compute_matrices_ABCD = pMatrices_ABCD;
+
+    this->compute_matrix_A = NULL;
+    this->compute_matrix_B = NULL;
+    this->compute_matrix_C = NULL;
+    this->compute_matrix_D = NULL;
+
+    this->num_param = num_param;
+
+    this->extern_matrix_computation = true;
+
+    this->time = 0.0;
+    this->sampling_time = sampling_time;
+
+    // Determine matrix size
+    Eigen::VectorXd params = Eigen::VectorXd::Zero(1);
+    compute_matrices_ABCD(A, B, C, D, time, params);
 
     n = A.rows();
     m = B.cols();
@@ -184,12 +217,16 @@ void continuous_ss::evaluate(const Eigen::VectorXd& input)
     }
     else {
         // Compute state matrices using external functions
-        if (extern_matrix_computation) {
+        if (extern_matrix_computation && !this->compute_matrices_ABCD) {
             Eigen::VectorXd params = Eigen::VectorXd::Zero(1);
             compute_matrix_A(A, time, params);
             compute_matrix_B(B, time, params);
             compute_matrix_C(C, time, params);
             compute_matrix_D(D, time, params);
+        }
+        if (extern_matrix_computation && this->compute_matrices_ABCD) {
+            Eigen::VectorXd params = Eigen::VectorXd::Zero(1);
+            compute_matrices_ABCD(A, B, C, D, time, params);
         }
 
         // Update state and output
@@ -237,10 +274,15 @@ void continuous_ss::evaluate(const Eigen::VectorXd& input, const Eigen::VectorXd
     }
     else {
         // Compute state matrices using external functions
-        compute_matrix_A(A, time, params);
-        compute_matrix_B(B, time, params);
-        compute_matrix_C(C, time, params);
-        compute_matrix_D(D, time, params);
+        if (!this->compute_matrices_ABCD) {
+            compute_matrix_A(A, time, params);
+            compute_matrix_B(B, time, params);
+            compute_matrix_C(C, time, params);
+            compute_matrix_D(D, time, params);
+        }
+        else {
+            compute_matrices_ABCD(A, B, C, D, time, params);
+        }
 
         // Update state and output
         if (time<sampling_time) {
