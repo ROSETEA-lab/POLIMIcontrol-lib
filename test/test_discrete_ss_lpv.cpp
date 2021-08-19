@@ -20,38 +20,54 @@ int count_all(const std::vector<double>& vec, UnaryFunctionT func )
 bool is_nan (double d) { return std::isnan(d); }
 bool is_inf (double d) { return std::isinf(d); }
 
-Eigen::MatrixXd A0, A1, B0, B1, C0, C1, D0, D1;
-std::vector<Eigen::MatrixXd> Ap, Bp, Cp, Dp;
+// Derive a new class specifing time-varying system matrix computation
+class discrete_ss_lpv : public discrete_ss {
+private:
+    Eigen::MatrixXd A0, B0, C0, D0, A1, B1, C1, D1;
+    std::vector<Eigen::MatrixXd> Ap, Bp, Cp, Dp;
 
-// Time-varying system matrix computation
-void compute_matrix_A(Eigen::MatrixXd& A, int k, const Eigen::VectorXd& params) {
-    A = A0+pow((double)k,0.5)*A1;
+    void compute_state_matrices(Eigen::MatrixXd& A, Eigen::MatrixXd& B, Eigen::MatrixXd& C, Eigen::MatrixXd& D, int time, const Eigen::VectorXd& param)
+    {
+        A = A0+pow((double)time,0.5)*A1;
 
-    for (auto i=0; i<params.size(); i++) {
-        A += Ap.at(i)*params(i);
+        for (auto i=0; i<param.size(); i++) {
+            A += Ap.at(i)*param(i);
+        }
+
+        B = B0+pow((double)time,0.5)*B1;
+
+        for (auto i=0; i<param.size(); i++) {
+            B += Bp.at(i)*param(i);
+        }
+
+        C = C0+pow((double)time,0.5)*C1;
+
+        for (auto i=0; i<param.size(); i++) {
+            C += Cp.at(i)*param(i);
+        }
+
+        D = D0+pow((double)time,0.5)*D1;
+
+        for (auto i=0; i<param.size(); i++) {
+            D += Dp.at(i)*param(i);
+        }
     }
-}
-void compute_matrix_B(Eigen::MatrixXd& B, int k, const Eigen::VectorXd& params) {
-    B = B0+pow((double)k,0.5)*B1;
 
-    for (auto i=0; i<params.size(); i++) {
-        B += Bp.at(i)*params(i);
-    }
-}
-void compute_matrix_C(Eigen::MatrixXd& C, int k, const Eigen::VectorXd& params) {
-    C = C0+pow((double)k,0.5)*C1;
+public:
+    discrete_ss_lpv(int num_param, const Eigen::VectorXd& initial_state) :
+        discrete_ss(num_param, initial_state) {};
 
-    for (auto i=0; i<params.size(); i++) {
-        C += Cp.at(i)*params(i);
+    void set_base_matrix(const Eigen::MatrixXd& A0, const Eigen::MatrixXd& A1, const Eigen::MatrixXd& B0, const Eigen::MatrixXd& B1,
+                         const Eigen::MatrixXd& C0, const Eigen::MatrixXd& C1, const Eigen::MatrixXd& D0, const Eigen::MatrixXd& D1,
+                         const std::vector<Eigen::MatrixXd>& Ap, const std::vector<Eigen::MatrixXd>& Bp, const std::vector<Eigen::MatrixXd>& Cp, const std::vector<Eigen::MatrixXd>& Dp)
+    {
+        this->A0 = A0; this->A1 = A1;
+        this->B0 = B0; this->B1 = B1;
+        this->C0 = C0; this->C1 = C1;
+        this->D0 = D0; this->D1 = D1;
+        this->Ap = Ap; this->Bp = Bp; this->Cp = Cp; this->Dp = Dp;
     }
-}
-void compute_matrix_D(Eigen::MatrixXd& D, int k, const Eigen::VectorXd& params) {
-    D = D0+pow((double)k,0.5)*D1;
-
-    for (auto i=0; i<params.size(); i++) {
-        D += Dp.at(i)*params(i);
-    }
-}
+};
 
 
 int main() {
@@ -78,21 +94,21 @@ int main() {
         matlab::data::TypedArray<double> p = matlabPtr->getVariable(u"p");
         matlab::data::TypedArray<double> num_param = matlabPtr->getVariable(u"num_param");
 
-        A0 = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
+        Eigen::MatrixXd A0 = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
         matlab::data::TypedArray<double> m_A0 = matlabPtr->getVariable(u"A0");
         for (auto i=0; i<(int)n[0]; i++) {
             for (auto j=0; j<(int)n[0]; j++) {
                 A0(i,j) = m_A0[i][j];
             }
         }
-        A1 = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
+        Eigen::MatrixXd A1 = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
         matlab::data::TypedArray<double> m_A1 = matlabPtr->getVariable(u"A1");
         for (auto i=0; i<(int)n[0]; i++) {
             for (auto j=0; j<(int)n[0]; j++) {
                 A1(i,j) = m_A1[i][j];
             }
         }
-        Ap.clear();
+        std::vector<Eigen::MatrixXd> Ap;
         matlab::data::TypedArray<double> m_Ap = matlabPtr->getVariable(u"Ap");
         for (auto pm=0; pm<(int)num_param[0]; pm++) {
             Eigen::MatrixXd Apk = Eigen::MatrixXd::Zero((int)n[0],(int)n[0]);
@@ -104,21 +120,21 @@ int main() {
             Ap.push_back(Apk);
         }
 
-        B0 = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
+        Eigen::MatrixXd B0 = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
         matlab::data::TypedArray<double> m_B0 = matlabPtr->getVariable(u"B0");
         for (auto i=0; i<(int)n[0]; i++) {
             for (auto j=0; j<(int)m[0]; j++) {
                 B0(i,j) = m_B0[i][j];
             }
         }
-        B1 = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
+        Eigen::MatrixXd B1 = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
         matlab::data::TypedArray<double> m_B1 = matlabPtr->getVariable(u"B1");
         for (auto i=0; i<(int)n[0]; i++) {
             for (auto j=0; j<(int)m[0]; j++) {
                 B1(i,j) = m_B1[i][j];
             }
         }
-        Bp.clear();
+        std::vector<Eigen::MatrixXd> Bp;
         matlab::data::TypedArray<double> m_Bp = matlabPtr->getVariable(u"Bp");
         for (auto pm=0; pm<(int)num_param[0]; pm++) {
             Eigen::MatrixXd Bpk = Eigen::MatrixXd::Zero((int)n[0],(int)m[0]);
@@ -130,21 +146,21 @@ int main() {
             Bp.push_back(Bpk);
         }
 
-        C0 = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
+        Eigen::MatrixXd C0 = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
         matlab::data::TypedArray<double> m_C0 = matlabPtr->getVariable(u"C0");
         for (auto i=0; i<(int)p[0]; i++) {
             for (auto j=0; j<(int)n[0]; j++) {
                 C0(i,j) = m_C0[i][j];
             }
         }
-        C1 = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
+        Eigen::MatrixXd C1 = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
         matlab::data::TypedArray<double> m_C1 = matlabPtr->getVariable(u"C1");
         for (auto i=0; i<(int)p[0]; i++) {
             for (auto j=0; j<(int)n[0]; j++) {
                 C1(i,j) = m_C1[i][j];
             }
         }
-        Cp.clear();
+        std::vector<Eigen::MatrixXd> Cp;
         matlab::data::TypedArray<double> m_Cp = matlabPtr->getVariable(u"Cp");
         for (auto pm=0; pm<(int)num_param[0]; pm++) {
             Eigen::MatrixXd Cpk = Eigen::MatrixXd::Zero((int)p[0],(int)n[0]);
@@ -156,21 +172,21 @@ int main() {
             Cp.push_back(Cpk);
         }
 
-        D0 = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
+        Eigen::MatrixXd D0 = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
         matlab::data::TypedArray<double> m_D0 = matlabPtr->getVariable(u"D0");
         for (auto i=0; i<(int)p[0]; i++) {
             for (auto j=0; j<(int)m[0]; j++) {
                 D0(i,j) = m_D0[i][j];
             }
         }
-        D1 = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
+        Eigen::MatrixXd D1 = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
         matlab::data::TypedArray<double> m_D1 = matlabPtr->getVariable(u"D1");
         for (auto i=0; i<(int)p[0]; i++) {
             for (auto j=0; j<(int)m[0]; j++) {
                 D1(i,j) = m_D1[i][j];
             }
         }
-        Dp.clear();
+        std::vector<Eigen::MatrixXd> Dp;
         matlab::data::TypedArray<double> m_Dp = matlabPtr->getVariable(u"Dp");
         for (auto pm=0; pm<(int)num_param[0]; pm++) {
             Eigen::MatrixXd Dpk = Eigen::MatrixXd::Zero((int)p[0],(int)m[0]);
@@ -210,7 +226,8 @@ int main() {
         matlab::data::TypedArray<double> m_state  = matlabPtr->getVariable(u"state");
 
         // Simulate system in C++ and compare
-        discrete_ss ssd(compute_matrix_A, compute_matrix_B, compute_matrix_C, compute_matrix_D, (int)num_param[0], initial_state);
+        discrete_ss_lpv ssd((int)num_param[0], initial_state);
+        ssd.set_base_matrix(A0, A1, B0, B1, C0, C1, D0, D1, Ap, Bp, Cp, Dp);
 
         Eigen::VectorXd output, state;
         std::vector<double> state_error, output_error;

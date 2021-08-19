@@ -35,15 +35,10 @@ test_discrete_ss_tv: test_discrete_ss_tv.o
 test_discrete_ss_tv.o: test_discrete_ss_tv.cpp
 	$(CC) -c $(CCFLAGS) test_discrete_ss_tv.cpp -o test_discrete_ss_tv.o
 
-test_continuous_ss_tv_1: test_continuous_ss_tv_1.o
-	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_tv_1 test_continuous_ss_tv_1.o $(CCLNFLAGS)
-test_continuous_ss_tv_1.o: test_continuous_ss_tv_1.cpp
-	$(CC) -c $(CCFLAGS) test_continuous_ss_tv_1.cpp -o test_continuous_ss_tv_1.o
-
-test_continuous_ss_tv_2: test_continuous_ss_tv_2.o
-	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_tv_2 test_continuous_ss_tv_2.o $(CCLNFLAGS)
-test_continuous_ss_tv_2.o: test_continuous_ss_tv_2.cpp
-	$(CC) -c $(CCFLAGS) test_continuous_ss_tv_2.cpp -o test_continuous_ss_tv_2.o
+test_continuous_ss_tv: test_continuous_ss_tv.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_tv test_continuous_ss_tv.o $(CCLNFLAGS)
+test_continuous_ss_tv.o: test_continuous_ss_tv.cpp
+	$(CC) -c $(CCFLAGS) test_continuous_ss_tv.cpp -o test_continuous_ss_tv.o
 
 test_continuous_ss_tv_single: test_continuous_ss_tv_single.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_tv_single test_continuous_ss_tv_single.o $(CCLNFLAGS)
@@ -55,15 +50,10 @@ test_discrete_ss_lpv: test_discrete_ss_lpv.o
 test_discrete_ss_lpv.o: test_discrete_ss_lpv.cpp
 	$(CC) -c $(CCFLAGS) test_discrete_ss_lpv.cpp -o test_discrete_ss_lpv.o
 
-test_continuous_ss_lpv_1: test_continuous_ss_lpv_1.o
-	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_lpv_1 test_continuous_ss_lpv_1.o $(CCLNFLAGS)
-test_continuous_ss_lpv_1.o: test_continuous_ss_lpv_1.cpp
-	$(CC) -c $(CCFLAGS) test_continuous_ss_lpv_1.cpp -o test_continuous_ss_lpv_1.o
-
-test_continuous_ss_lpv_2: test_continuous_ss_lpv_2.o
-	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_lpv_2 test_continuous_ss_lpv_2.o $(CCLNFLAGS)
-test_continuous_ss_lpv_2.o: test_continuous_ss_lpv_2.cpp
-	$(CC) -c $(CCFLAGS) test_continuous_ss_lpv_2.cpp -o test_continuous_ss_lpv_2.o
+test_continuous_ss_lpv: test_continuous_ss_lpv.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_continuous_ss_lpv test_continuous_ss_lpv.o $(CCLNFLAGS)
+test_continuous_ss_lpv.o: test_continuous_ss_lpv.cpp
+	$(CC) -c $(CCFLAGS) test_continuous_ss_lpv.cpp -o test_continuous_ss_lpv.o
 
 test_FIR_filter: test_FIR_filter.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_FIR_filter test_FIR_filter.o $(CCLNFLAGS)
@@ -86,14 +76,12 @@ PID_controller_sim_odeint.o: PID_controller_sim_odeint.cpp
 	$(CC) -c $(CCFLAGS) PID_controller_sim_odeint.cpp -o PID_controller_sim_odeint.o
 
 all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
-     test_continuous_ss_tv_1 test_continuous_ss_tv_1 test_continuous_ss_tv_single test_discrete_ss_lpv\
-     test_continuous_ss_lpv_1 test_continuous_ss_lpv_2\
+     test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
      test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint
 
 clean:
 	@rm -rf *~ *.o
 	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
-	        test_continuous_ss_tv_1 test_continuous_ss_tv_2 test_continuous_ss_tv_single test_discrete_ss_lpv\
-            test_continuous_ss_lpv_1 test_continuous_ss_lpv_2 test_FIR_filter test_PID_controller\
-            PID_controller_sim PID_controller_sim_odeint
+	        test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter\
+            test_PID_controller PID_controller_sim PID_controller_sim_odeint
 
