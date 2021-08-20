@@ -4,7 +4,7 @@ CCLNDIRS = -L/usr/local/MATLAB/R2021a/bin/glnxa64 -L/usr/local/MATLAB/R2021a/ext
 
 CCOPT = -m64 -fexceptions -fPIC -fno-omit-frame-pointer -fno-strict-aliasing -pthread -O2 -fwrapv -DNDEBUG -DIL_STD
 
-CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2021a/extern/include -I/usr/local/MATLAB/R2021a/simulink/include -I/usr/include/eigen3 -I/usr/include/python2.7
+CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2021a/extern/include -I/usr/local/MATLAB/R2021a/simulink/include -I/usr/include/eigen3 -I/usr/include/python2.7 -I/usr/local/include/POLIMIcontrol
 
 CCC = g++ -O0 -std=c++11
 
