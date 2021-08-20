@@ -1,4 +1,4 @@
-CCLNFLAGS = -lstdc++ -leng -lMatlabEngine -lMatlabDataArray -lmx -lmat -lm -lpthread -ldl -lControl -lpython2.7
+CCLNFLAGS = -lstdc++ -leng -lMatlabEngine -lMatlabDataArray -lmx -lmat -lm -lpthread -ldl -lPOLIMIControl -lpython2.7 -lmatio
 
 CCLNDIRS = -L/usr/local/MATLAB/R2021a/bin/glnxa64 -L/usr/local/MATLAB/R2021a/extern/bin/glnxa64
 
@@ -75,13 +75,18 @@ PID_controller_sim_odeint: PID_controller_sim_odeint.o
 PID_controller_sim_odeint.o: PID_controller_sim_odeint.cpp
 	$(CC) -c $(CCFLAGS) PID_controller_sim_odeint.cpp -o PID_controller_sim_odeint.o
 
+test_matio: test_matio.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_matio test_matio.o $(CCLNFLAGS)
+test_matio.o: test_matio.cpp
+	$(CC) -c $(CCFLAGS) test_matio.cpp -o test_matio.o
+
 all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
      test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
-     test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint
+     test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_matio
 
 clean:
 	@rm -rf *~ *.o
 	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
 	        test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter\
-            test_PID_controller PID_controller_sim PID_controller_sim_odeint
+            test_PID_controller PID_controller_sim PID_controller_sim_odeint test_matio
 
