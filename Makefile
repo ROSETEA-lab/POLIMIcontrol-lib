@@ -6,7 +6,7 @@ CCLNDIRS =
 
 CCOPT = -m64 -O -fPIC -fno-strict-aliasing -fexceptions -DNDEBUG -DIL_STD
 
-CCFLAGS = $(CCOPT) -I/usr/include/eigen3 -I./
+CCFLAGS = $(CCOPT) -I/usr/include/eigen3 -I./ -I./util
 
 CCC = g++ -O0 -std=c++11
 

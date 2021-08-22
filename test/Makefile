@@ -75,18 +75,35 @@ PID_controller_sim_odeint: PID_controller_sim_odeint.o
 PID_controller_sim_odeint.o: PID_controller_sim_odeint.cpp
 	$(CC) -c $(CCFLAGS) PID_controller_sim_odeint.cpp -o PID_controller_sim_odeint.o
 
+test_AGS_compute_matrices: test_AGS_compute_matrices.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_AGS_compute_matrices test_AGS_compute_matrices.o $(CCLNFLAGS)
+test_AGS_compute_matrices.o: test_AGS_compute_matrices.cpp
+	$(CC) -c $(CCFLAGS) test_AGS_compute_matrices.cpp -o test_AGS_compute_matrices.o
+
+test_AGS_controller: test_AGS_controller.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_AGS_controller test_AGS_controller.o $(CCLNFLAGS)
+test_AGS_controller.o: test_AGS_controller.cpp
+	$(CC) -c $(CCFLAGS) test_AGS_controller.cpp -o test_AGS_controller.o
+
 test_matio: test_matio.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_matio test_matio.o $(CCLNFLAGS)
 test_matio.o: test_matio.cpp
 	$(CC) -c $(CCFLAGS) test_matio.cpp -o test_matio.o
 
+test_lu: test_lu.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_lu test_lu.o $(CCLNFLAGS)
+test_lu.o: test_lu.cpp
+	$(CC) -c $(CCFLAGS) test_lu.cpp -o test_lu.o
+
 all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
      test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
-     test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_matio
+     test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices\
+     test_AGS_controller test_matio test_lu
 
 clean:
 	@rm -rf *~ *.o
 	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
 	        test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter\
-            test_PID_controller PID_controller_sim PID_controller_sim_odeint test_matio
+            test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices test_AGS_controller\
+            test_matio test_lu
 
