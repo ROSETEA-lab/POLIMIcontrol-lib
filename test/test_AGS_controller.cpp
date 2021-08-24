@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     // Initialize the MATLAB simulation
     matlabPtr->eval(u"clear all; close all");
     matlabPtr->eval(u"load('test_AGS_controller.mat');");
-    matlabPtr->eval(u"open_system('AGS_controller_sim');");
+    matlabPtr->eval(u"open_system('test_AGS_controller_sim');");
 
     matlabLine = "set_param('AGS_controller_sim/Vx','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
