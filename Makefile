@@ -17,10 +17,11 @@ libPOLIMIControl.so:
 	$(CCC) -c $(CCFLAGS) discrete_tf.cpp -o discrete_tf.o
 	$(CCC) -c $(CCFLAGS) discrete_ss.cpp -o discrete_ss.o
 	$(CCC) -c $(CCFLAGS) continuous_ss.cpp -o continuous_ss.o
+	$(CCC) -c $(CCFLAGS) differenziator.cpp -o differenziator.o
 	$(CCC) -c $(CCFLAGS) ./controller/PID_controller.cpp -o PID_controller.o
 	$(CCC) -c $(CCFLAGS) ./controller/AGS_controller.cpp -o AGS_controller.o
 	$(CCC) -c $(CCFLAGS) ./util/matfile_fun.cpp -o matfile_fun.o
-	$(CCC) -shared -Wl,-soname,libPOLIMIControl.so -o libPOLIMIControl.so FIR_filter.o discrete_tf.o discrete_ss.o continuous_ss.o PID_controller.o AGS_controller.o matfile_fun.o
+	$(CCC) -shared -Wl,-soname,libPOLIMIControl.so -o libPOLIMIControl.so FIR_filter.o discrete_tf.o discrete_ss.o continuous_ss.o differenziator.o PID_controller.o AGS_controller.o matfile_fun.o
 
 all: libPOLIMIControl.so
 
@@ -38,6 +39,7 @@ install:
 	@cp discrete_tf.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp discrete_ss.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp continuous_ss.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
+	@cp differenziator.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 
 uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/lib/libControl.so
@@ -45,6 +47,7 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/discrete_tf.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/discrete_ss.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/continuous_ss.h
+	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/differenziator.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/PID_controller.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/AGS_controller.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/matfile_fun.h
