@@ -1,4 +1,4 @@
-#include "differenziator.h"
+#include "differentiator.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -6,14 +6,14 @@
 #include <unsupported/Eigen/MatrixFunctions>
 #include <boost/math/special_functions/factorials.hpp>
 
-// Differenziator methods
-differenziator::differenziator(unsigned int n, double r, double Ts) :
-    differenziator(n, 1, -1.0, r, 1, 0.0, Ts)
+// Differentiator methods
+differentiator::differentiator(unsigned int n, double r, double Ts) :
+    differentiator(n, 1, -1.0, r, 1, 0.0, Ts)
 {
     // Do nothing
 }
 
-differenziator::differenziator(unsigned int n, unsigned int nf, double d, double r, unsigned int m, double mu, double Ts)
+differentiator::differentiator(unsigned int n, unsigned int nf, double d, double r, unsigned int m, double mu, double Ts)
 {
     // Check parameter values
     if (n==0) {
@@ -89,12 +89,12 @@ differenziator::differenziator(unsigned int n, unsigned int nf, double d, double
     _x0 = _z0 = 0.0;
 }
 
-differenziator::~differenziator()
+differentiator::~differentiator()
 {
     // Do nothing
 }
 
-void differenziator::evaluate(double u)
+void differentiator::evaluate(double u)
 {
     _x0 = err(u, _zp(1));
 
@@ -122,7 +122,7 @@ void differenziator::evaluate(double u)
 
 
 // Private methods
-double differenziator::err(double u, double first_state)
+double differentiator::err(double u, double first_state)
 {
     if (_nf>0) {
         return -first_state;
@@ -131,12 +131,12 @@ double differenziator::err(double u, double first_state)
     return u - first_state;
 }
 
-double differenziator::cont_eigenvalues(double x0)
+double differentiator::cont_eigenvalues(double x0)
 {
     return -_r*std::pow(std::fabs(x0),(_d/(1-_d*(_sys_n-1))));
 }
 
-double differenziator::disc_eigenvalues(double s)
+double differentiator::disc_eigenvalues(double s)
 {
     switch (_m) {
         case 0:
@@ -159,19 +159,19 @@ double differenziator::disc_eigenvalues(double s)
     return 0.0;
 }
 
-double differenziator::disc_eigenvalues_URED(double x0)
+double differentiator::disc_eigenvalues_URED(double x0)
 {
     double c = std::pow(std::fabs(x0),1.0/(double)_sys_n);
     return c/(_Ts*_r*_mu*std::abs(x0)+c+_Ts*_r);
 }
 
-void differenziator::ackerman(Eigen::VectorXd& lambda, double z)
+void differentiator::ackerman(Eigen::VectorXd& lambda, double z)
 {
     Eigen::MatrixXd kappa = (_Phi - z*Eigen::MatrixXd::Identity(_sys_n,_sys_n)).pow(_sys_n);
     lambda = kappa*_So_inv.block(0,_sys_n,_sys_n,1);
 }
 
-void differenziator::ackerman_precomputed(Eigen::VectorXd& lambda, double z)
+void differentiator::ackerman_precomputed(Eigen::VectorXd& lambda, double z)
 {
     double z0 = z;
 
@@ -287,7 +287,7 @@ void differenziator::ackerman_precomputed(Eigen::VectorXd& lambda, double z)
     }
 }
 
-void differenziator::step(Eigen::VectorXd& z, double u, const Eigen::VectorXd& lambda)
+void differentiator::step(Eigen::VectorXd& z, double u, const Eigen::VectorXd& lambda)
 {
     z = _Phi*z.eval()+_bD*u+lambda*_x0;
 }

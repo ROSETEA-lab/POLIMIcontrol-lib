@@ -6,16 +6,16 @@
 #include <Eigen/Dense>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Differenziator class
+// Differentiator class
 //
-// Implements the differenziator described in
+// Implements the differentiator described in
 //
 // B. Andritsch, M. Horn, S. Koch, H. Niederwieser, M. Wetzlinger, M. Reichhartinger
 // The Robust Exact Differentiator Toolbox revisited: Filtering and Discretization Features
 // 2021 IEEE International Conference on Mechatronics
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class differenziator
+class differentiator
 {
     private:
         double _d, _r, _mu, _Ts;
@@ -35,9 +35,9 @@ class differenziator
         void   step(Eigen::VectorXd& z, double u, const Eigen::VectorXd& lambda);
 
     public:
-        differenziator(unsigned int n, double r, double Ts);
-        differenziator(unsigned int n, unsigned int nf, double d, double r, unsigned int m, double mu, double Ts);
-        ~differenziator();
+        differentiator(unsigned int n, double r, double Ts);
+        differentiator(unsigned int n, unsigned int nf, double d, double r, unsigned int m, double mu, double Ts);
+        ~differentiator();
 
         void evaluate(double u);
 
@@ -47,26 +47,26 @@ class differenziator
 };
 
 
-class linear_differenziator : public differenziator
+class linear_differenziator : public differentiator
 {
     public:
-        linear_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differenziator(n, nf, 0.0, r, m, 0.0, Ts) {};
+        linear_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, 0.0, r, m, 0.0, Ts) {};
         ~linear_differenziator();
 };
 
 
-class robust_exact_differenziator : public differenziator
+class robust_exact_differenziator : public differentiator
 {
     public:
-        robust_exact_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differenziator(n, nf, -1.0, r, m, 0.0, Ts) {};
+        robust_exact_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, -1.0, r, m, 0.0, Ts) {};
         ~robust_exact_differenziator();
 };
 
 
-class uniform_robust_exact_differenziator : public differenziator
+class uniform_robust_exact_differenziator : public differentiator
 {
     public:
-        uniform_robust_exact_differenziator(unsigned int n, unsigned int nf, double r, double mu, double Ts) : differenziator(n, nf, -1.0, r, 2.0, mu, Ts) {};
+        uniform_robust_exact_differenziator(unsigned int n, unsigned int nf, double r, double mu, double Ts) : differentiator(n, nf, -1.0, r, 2.0, mu, Ts) {};
         ~uniform_robust_exact_differenziator();
 };
 
