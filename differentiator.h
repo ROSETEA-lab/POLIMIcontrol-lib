@@ -41,33 +41,33 @@ class differentiator
 
         void evaluate(double u);
 
-        void get_x0(double x0) { x0 = _x0; };
-        void get_z0(double z0) { z0 = _z0; };
+        void get_x0(double& x0) { x0 = _x0; };
+        void get_z0(double& z0) { z0 = _z0; };
         void get_z(Eigen::VectorXd& z) { z = _z; };
 };
 
 
-class linear_differenziator : public differentiator
+class linear_differentiator : public differentiator
 {
     public:
-        linear_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, 0.0, r, m, 0.0, Ts) {};
-        ~linear_differenziator();
+        linear_differentiator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, 0.0, r, m, 0.0, Ts) {};
+        ~linear_differentiator() {};
 };
 
 
-class robust_exact_differenziator : public differentiator
+class robust_exact_differentiator : public differentiator
 {
     public:
-        robust_exact_differenziator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, -1.0, r, m, 0.0, Ts) {};
-        ~robust_exact_differenziator();
+        robust_exact_differentiator(unsigned int n, unsigned int nf, double r, unsigned int m, double Ts) : differentiator(n, nf, -1.0, r, m, 0.0, Ts) {};
+        ~robust_exact_differentiator() {};
 };
 
 
-class uniform_robust_exact_differenziator : public differentiator
+class uniform_robust_exact_differentiator : public differentiator
 {
     public:
-        uniform_robust_exact_differenziator(unsigned int n, unsigned int nf, double r, double mu, double Ts) : differentiator(n, nf, -1.0, r, 2.0, mu, Ts) {};
-        ~uniform_robust_exact_differenziator();
+        uniform_robust_exact_differentiator(unsigned int n, unsigned int nf, double r, double mu, double Ts) : differentiator(n, nf, -1.0, r, 2.0, mu, Ts) {};
+        ~uniform_robust_exact_differentiator() {};
 };
 
 #endif // DIFFERENZIATOR_H_

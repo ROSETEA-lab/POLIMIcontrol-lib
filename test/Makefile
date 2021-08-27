@@ -85,6 +85,11 @@ test_AGS_controller: test_AGS_controller.o
 test_AGS_controller.o: test_AGS_controller.cpp
 	$(CC) -c $(CCFLAGS) test_AGS_controller.cpp -o test_AGS_controller.o
 
+test_differentiator: test_differentiator.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_differentiator test_differentiator.o $(CCLNFLAGS)
+test_differentiator.o: test_differentiator.cpp
+	$(CC) -c $(CCFLAGS) test_differentiator.cpp -o test_differentiator.o
+
 test_matio: test_matio.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_matio test_matio.o $(CCLNFLAGS)
 test_matio.o: test_matio.cpp
@@ -98,12 +103,12 @@ test_lu.o: test_lu.cpp
 all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
      test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
      test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices\
-     test_AGS_controller test_matio test_lu
+     test_AGS_controller test_differentiator test_matio test_lu
 
 clean:
 	@rm -rf *~ *.o
 	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
 	        test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter\
             test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices test_AGS_controller\
-            test_matio test_lu
+            test_differentiator test_matio test_lu
 

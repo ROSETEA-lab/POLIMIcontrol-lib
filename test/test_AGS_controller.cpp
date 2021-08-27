@@ -20,21 +20,21 @@ int main(int argc, char **argv)
     matlabPtr->eval(u"load('test_AGS_controller.mat');");
     matlabPtr->eval(u"open_system('test_AGS_controller_sim');");
 
-    matlabLine = "set_param('AGS_controller_sim/Vx','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/Vx','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
-    matlabLine = "set_param('AGS_controller_sim/xi_d','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/xi_d','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
-    matlabLine = "set_param('AGS_controller_sim/beta','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/beta','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
-    matlabLine = "set_param('AGS_controller_sim/r','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/r','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
-    matlabLine = "set_param('AGS_controller_sim/t','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/t','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
-    matlabLine = "set_param('AGS_controller_sim/Fy','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
+    matlabLine = "set_param('test_AGS_controller_sim/Fy','SampleTime','" + std::to_string(SAMPLING_TIME) + "');";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
 
     // Start Simulink simulation
-    matlabLine = "simres = sim('AGS_controller_sim', [0 " + std::to_string(T_END) + "]);";
+    matlabLine = "simres = sim('test_AGS_controller_sim', [0 " + std::to_string(T_END) + "]);";
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
 
     // Open mat file
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
         control.push_back(Fyf(0));
     }
 
-    matlabPtr->eval(u"close_system('AGS_controller_sim',0);");
+    matlabPtr->eval(u"close_system('test_AGS_controller_sim',0);");
 
     std::cout << "Test completed, plotting results" << std::endl;
 

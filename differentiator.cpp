@@ -96,7 +96,7 @@ differentiator::~differentiator()
 
 void differentiator::evaluate(double u)
 {
-    _x0 = err(u, _zp(1));
+    _x0 = err(u, _zp(0));
 
     double z_eig;
     if (_m == 2) {
@@ -128,12 +128,12 @@ double differentiator::err(double u, double first_state)
         return -first_state;
     }
 
-    return u - first_state;
+    return u-first_state;
 }
 
 double differentiator::cont_eigenvalues(double x0)
 {
-    return -_r*std::pow(std::fabs(x0),(_d/(1-_d*(_sys_n-1))));
+    return -_r*std::pow(std::fabs(x0),(double)(_d/(1-_d*(_sys_n-1))));
 }
 
 double differentiator::disc_eigenvalues(double s)
