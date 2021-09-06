@@ -15,6 +15,11 @@ test_discrete_tf: test_discrete_tf.o
 test_discrete_tf.o: test_discrete_tf.cpp
 	$(CC) -c $(CCFLAGS) test_discrete_tf.cpp -o test_discrete_tf.o
 
+test_discrete_integrator: test_discrete_integrator.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_discrete_integrator test_discrete_integrator.o $(CCLNFLAGS)
+test_discrete_integrator.o: test_discrete_integrator.cpp
+	$(CC) -c $(CCFLAGS) test_discrete_integrator.cpp -o test_discrete_integrator.o
+
 test_discrete_ss_ti: test_discrete_ss_ti.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_discrete_ss_ti test_discrete_ss_ti.o $(CCLNFLAGS)
 test_discrete_ss_ti.o: test_discrete_ss_ti.cpp
@@ -100,15 +105,15 @@ test_lu: test_lu.o
 test_lu.o: test_lu.cpp
 	$(CC) -c $(CCFLAGS) test_lu.cpp -o test_lu.o
 
-all: test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
-     test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
+all: test_discrete_tf test_discrete_integrator test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single\
+     test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
      test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices\
      test_AGS_controller test_differentiator test_matio test_lu
 
 clean:
 	@rm -rf *~ *.o
-	@rm -rf test_discrete_tf test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single test_discrete_ss_tv\
-	        test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter\
-            test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices test_AGS_controller\
-            test_differentiator test_matio test_lu
+	@rm -rf test_discrete_tf test_discrete_integrator test_discrete_ss_ti test_continuous_ss_ti test_continuous_ss_ti_single\
+            test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv test_continuous_ss_lpv\
+            test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint test_AGS_compute_matrices\
+            test_AGS_controller test_differentiator test_matio test_lu
 
