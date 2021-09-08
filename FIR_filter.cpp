@@ -4,7 +4,13 @@
 #include <algorithm>
 
 
-FIR_filter::FIR_filter(const std::vector<double>& coefficient)
+FIR_filter::FIR_filter(const std::vector<double>& coefficient) :
+    FIR_filter(coefficient, std::vector<double>((int)coefficient.size()-1, 0.0))
+{
+    // Do nothing
+}
+
+FIR_filter::FIR_filter(const std::vector<double>& coefficient, const std::vector<double>& initial_state)
 {
     // Check parameter consistency
     if (coefficient.size()<1)
@@ -23,8 +29,12 @@ FIR_filter::FIR_filter(const std::vector<double>& coefficient)
             this->coefficient.push_back(*it_coeff);
         }
 
+        // Numerator and denominator size
+        m = (int)coefficient.size();
+        lw = m-1;
+
         // Initialize state vector
-        state.assign((int)coefficient.size()-1, 0.0);
+        state = initial_state;
     }
 }
 
@@ -35,25 +45,40 @@ FIR_filter::~FIR_filter()
 
 void FIR_filter::evaluate(double input, double& output)
 {
-    // If the filter is algebraic, directly compute the output end exit
-    if ((int)coefficient.size()==1) {
+//    if(lw > 0)
+//      for index = 1:L
+//        y(index) = w(1) + b(1)*x(index);
+//        if ( lw > 1)
+//          # Update state vector
+//          w(1:lw-1) = w(2:lw) + b(2:lw)*x(index);
+//          w(lw) = b(MN)*x(index);
+//        else
+//          w(1) = b(2)*x(index);
+//        endif
+//      endfor
+//    else
+//      # Handle special case where there is no delay separately.
+//      y = b(1)*x;
+//    endif
+
+    // Evaluate filter output
+    if (lw>0) {
+        output = state.at(0)+coefficient.at(0)*input;
+        if (lw>1) {
+            // Update state vector
+            for (auto k=0; k<lw-1; k++) {
+                state.at(k) = state.at(k+1)+coefficient.at(k+1)*input;
+            }
+            state.at(lw-1) = coefficient.at(m-1)*input;
+        }
+        else {
+            state.at(0) = coefficient.at(1)*input;
+        }
+    }
+    else {              // If the filter is algebraic, directly compute the output end exit
         output = coefficient.at(0)*input;
         return;
     }
-
-    // Otherwise, evaluate the filter output
-    std::vector<double>::iterator it_state;
-    std::vector<double>::iterator it_coeff = coefficient.begin();
-
-    output = *it_coeff*input;
-    for (it_coeff = coefficient.begin()+1, it_state = state.begin(); it_coeff != coefficient.end(); ++it_coeff, ++it_state)
-    {
-        output += *it_coeff*(*it_state);
-    }
-
-    // Update the filter state
-    std::rotate(state.rbegin(), state.rbegin() + 1, state.rend());
-    state.at(0) = input;    
 }
 
 void FIR_filter::reset_state()

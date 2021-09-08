@@ -40,11 +40,17 @@ int main() {
             coeffs.push_back(coeff[i]);
         }
 
+        matlab::data::TypedArray<double> initial = matlabPtr->getVariable(u"initial_state");
+        std::vector<double> initial_state;
+        for (auto i=0; i<initial.getNumberOfElements(); i++) {
+            initial_state.push_back(initial[i]);
+        }
+
         matlab::data::TypedArray<double> in  = matlabPtr->getVariable(u"in");
         matlab::data::TypedArray<double> out = matlabPtr->getVariable(u"out");
 
         // Simulate filter in C++ and compare
-        FIR_filter filter(coeffs);
+        FIR_filter filter(coeffs, initial_state);
 
         std::vector<double> error;
         for (auto i=0; i<in.getNumberOfElements(); i++) {

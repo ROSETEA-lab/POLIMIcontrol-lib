@@ -112,14 +112,6 @@ void discrete_tf::evaluate(double input, double& output)
     {
         // Do nothing
     }
-//      y(index) = w(1) + b(1)*x(index);
-//      # Update state vector
-//      if(lw > 1)
-//        w(1:(lw-1)) = w(2:lw) - a(2:lw)*y(index) + b(2:lw)*x(index);
-//        w(lw) = b(MN)*x(index) - a(MN) * y(index);
-//      else
-//        w(1) = b(MN)*x(index) - a(MN) * y(index);
-//      endif
 }
 
 void discrete_tf::reset_state()
