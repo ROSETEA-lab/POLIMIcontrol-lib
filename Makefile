@@ -12,7 +12,7 @@ CCC = g++ -O0 -std=c++11
 
 CC = gcc
 
-libPOLIMIControl.so:
+libPOLIMIcontrol.so:
 	$(CCC) -c $(CCFLAGS) FIR_filter.cpp -o FIR_filter.o
 	$(CCC) -c $(CCFLAGS) discrete_tf.cpp -o discrete_tf.o
 	$(CCC) -c $(CCFLAGS) discrete_integrator.cpp -o discrete_integrator.o
@@ -23,9 +23,9 @@ libPOLIMIControl.so:
 	$(CCC) -c $(CCFLAGS) ./controller/PID_controller.cpp -o PID_controller.o
 	$(CCC) -c $(CCFLAGS) ./controller/AGS_controller.cpp -o AGS_controller.o
 	$(CCC) -c $(CCFLAGS) ./util/matfile_fun.cpp -o matfile_fun.o
-	$(CCC) -shared -Wl,-soname,libPOLIMIControl.so -o libPOLIMIControl.so FIR_filter.o discrete_tf.o discrete_integrator.o discrete_derivative.o discrete_ss.o continuous_ss.o differentiator.o PID_controller.o AGS_controller.o matfile_fun.o
+	$(CCC) -shared -Wl,-soname,libPOLIMIcontrol.so -o libPOLIMIcontrol.so FIR_filter.o discrete_tf.o discrete_integrator.o discrete_derivative.o discrete_ss.o continuous_ss.o differentiator.o PID_controller.o AGS_controller.o matfile_fun.o
 
-all: libPOLIMIControl.so
+all: libPOLIMIcontrol.so
 
 clean:
 	@rm -rf *.o *.so
@@ -33,7 +33,7 @@ clean:
 install:
 	@mkdir -p $(DESTDIR)$(PREFIX)/lib
 	@mkdir -p $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
-	@cp libPOLIMIControl.so $(DESTDIR)$(PREFIX)/lib
+	@cp libPOLIMIcontrol.so $(DESTDIR)$(PREFIX)/lib
 	@cp ./controller/PID_controller.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp ./controller/AGS_controller.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp ./util/matfile_fun.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
@@ -46,7 +46,7 @@ install:
 	@cp differentiator.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 
 uninstall:
-	@rm -f $(DESTDIR)$(PREFIX)/lib/libControl.so
+	@rm -f $(DESTDIR)$(PREFIX)/lib/libPOLIMIcontrol.so
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/FIR_filter.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/discrete_tf.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/discrete_integrator.h
