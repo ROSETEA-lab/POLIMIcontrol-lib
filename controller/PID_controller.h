@@ -29,6 +29,7 @@ class PID_controller
     public:
         PID_controller(double Kc, double Ts, double uMin, double uMax);
         PID_controller(double Kc, double Ti, double Ts, double uMin, double uMax);
+        PID_controller(double Kc, double Td, double N, double Ts, double uMin, double uMax);
         PID_controller(double Kc, double Ti, double Td, double N, double Ts, double uMin, double uMax);
         ~PID_controller();
 
