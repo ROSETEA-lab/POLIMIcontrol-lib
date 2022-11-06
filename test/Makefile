@@ -1,10 +1,10 @@
-CCLNFLAGS = -lstdc++ -leng -lMatlabEngine -lMatlabDataArray -lmx -lmat -lm -lpthread -ldl -lPOLIMIControl -lpython2.7 -lmatio
+CCLNFLAGS = -lstdc++ -lMatlabEngine -lMatlabDataArray -lm -lpthread -ldl -lPOLIMIcontrol -lpython3.8 -lmatio
 
-CCLNDIRS = -L/usr/local/MATLAB/R2021a/bin/glnxa64 -L/usr/local/MATLAB/R2021a/extern/bin/glnxa64
+CCLNDIRS = -L/usr/local/MATLAB/R2021a/bin/glnxa64 -L/usr/local/MATLAB/R2022a/extern/bin/glnxa64
 
 CCOPT = -m64 -fexceptions -fPIC -fno-omit-frame-pointer -fno-strict-aliasing -pthread -O2 -fwrapv -DNDEBUG -DIL_STD
 
-CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2021a/extern/include -I/usr/local/MATLAB/R2021a/simulink/include -I/usr/include/eigen3 -I/usr/include/python2.7 -I/usr/local/include/POLIMIcontrol
+CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2022a/extern/include -I/usr/local/MATLAB/R2022a/simulink/include -I/usr/include/eigen3 -I/usr/include/python3.8 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/local/include/POLIMIcontrol
 
 CCC = g++ -O0 -std=c++11
 
@@ -110,13 +110,13 @@ test_lu: test_lu.o
 test_lu.o: test_lu.cpp
 	$(CC) -c $(CCFLAGS) test_lu.cpp -o test_lu.o
 
-all: test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\    
+all: test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
 	 test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv\
 	 test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint\
 	 test_AGS_compute_matrices test_AGS_controller test_differentiator test_matio test_lu
 
 clean:
-	@rm -rf *~ *.o
+	@rm -rf *~ *.o *.slxc
 	@rm -rf test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
             test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single\
             test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim\

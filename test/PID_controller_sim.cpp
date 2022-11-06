@@ -7,11 +7,11 @@
 #include "PID_controller.h"
 
 #define SAMPLING_TIME   0.01
-#define KC              20.0
-#define TI              10.0
-#define UMIN            -100.0
-#define UMAX            100.0
-#define SIM_CYCLE       500
+#define KC              0.8
+#define TI              2.0
+#define UMIN            -10.0
+#define UMAX            10.0
+#define SIM_CYCLE       10000
 
 int main() {
     std::string matlabLine;
@@ -35,7 +35,8 @@ int main() {
     matlabPtr->eval(convertUTF8StringToUTF16String(matlabLine));
 
     // Initialize controller
-    PID_controller PID(KC, TI, SAMPLING_TIME, UMIN, UMAX);
+    PID_controller PID1(KC, SAMPLING_TIME, UMIN, UMAX);
+    PID_controller PID2(KC, TI, SAMPLING_TIME, UMIN, UMAX);
 
     // Start the simulation
     matlabLine = "simres = sim('PID_controller_sim', [0 " + std::to_string(SAMPLING_TIME) + "]);";
@@ -54,10 +55,46 @@ int main() {
         matlab::data::TypedArray<double> u   = matlabPtr->getVariable(u"u");
         matlab::data::TypedArray<double> ysp = matlabPtr->getVariable(u"ysp");
 
+        // Setpoint generation
+        double ysp_act;
+        if (k*SAMPLING_TIME<=20.0) {
+            ysp_act = -9.0;
+        } else if (k*SAMPLING_TIME<=40.0) {
+            ysp_act = 9.0;
+        } else if (k*SAMPLING_TIME<=60.0) {
+            ysp_act = 0.0;
+        } else if (k*SAMPLING_TIME<=80.0) {
+            ysp_act = 9.0;
+        } else {
+            ysp_act = 0.0;
+        }
+
         // Compute PID control law
-        double u_act = 0.0;
-        double ysp_act = 10.0;
-        PID.evaluate(y[y_size.at(0)-1], ysp_act, u_act);
+        double u_act;
+        if (k*SAMPLING_TIME<=10.0) {
+            PID1.setControllerState(PID_controller::PID_state::AUTO);
+            PID1.evaluate(y[y_size.at(0)-1], ysp_act, 0.0, u_act);
+
+            double utmp;
+            PID2.setControllerState(PID_controller::PID_state::TRACKING);
+            PID2.setControlSignalState(PID_controller::control_state::NO_FREEZE);
+            PID2.evaluate(y[y_size.at(0)-1], ysp_act, u_act, utmp);
+        }
+        else if ((k*SAMPLING_TIME>=62.5) && (k*SAMPLING_TIME<=64.5)) {
+            PID2.setControllerState(PID_controller::PID_state::AUTO);
+            PID2.setControlSignalState(PID_controller::control_state::FREEZE_DOWN);
+            PID2.evaluate(y[y_size.at(0)-1], ysp_act, 0.0, u_act);
+        }
+        else if ((k*SAMPLING_TIME>=81.0) && (k*SAMPLING_TIME<=82.5)) {
+            PID2.setControllerState(PID_controller::PID_state::AUTO);
+            PID2.setControlSignalState(PID_controller::control_state::FREEZE_UP);
+            PID2.evaluate(y[y_size.at(0)-1], ysp_act, 0.0, u_act);
+        }
+        else {
+            PID2.setControllerState(PID_controller::PID_state::AUTO);
+            PID2.setControlSignalState(PID_controller::control_state::NO_FREEZE);
+            PID2.evaluate(y[y_size.at(0)-1], ysp_act, 0.0, u_act);
+        }
 
         // Set reference and control variable
         matlabLine = "set_param('PID_controller_sim/u_act','Value','" + std::to_string(u_act) + "');";

@@ -5,10 +5,10 @@ t = 0:0.001:60;
 in = chirp(t,0,t(end),500);
 
 % Create PID coefficients
-Kp = 50*rand(1);
-Ti = 5*rand(1);
-Td = 10*rand(1);
-N  = round(100*rand(1));
+Kp = max(min(50*rand(1),25),0.1);
+Ti = max(min(50*rand(1),10),0.05);
+Td = max(min(50*rand(1),10),0.05);
+N  = max(min(round(100*rand(1)),100),10);
 Ts = 0.001;
 uMax = 1e15; % disable anti-windup that is implemented in a different way
 uMin = -uMax;

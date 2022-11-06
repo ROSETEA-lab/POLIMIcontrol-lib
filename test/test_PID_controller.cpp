@@ -45,11 +45,16 @@ int main() {
         for (auto i=0; i<in.getNumberOfElements(); i++) {
             double tmp_out;
 
-            PID.evaluate(0.0, in[i], tmp_out);
+            PID.evaluate(0.0, in[i], 0.0, tmp_out);
             error.push_back(std::fabs(out[i]-tmp_out));
         }
 
         test_error.at(k) = *std::max_element(error.begin(), error.end());
+
+        if (std::abs(test_error.at(k))>0.1) {
+            std::cout << "Test " << k << " with error " << test_error.at(k) << " - Kc=" << PID_param[0] <<
+            " Ti=" << PID_param[1] << " Td=" << PID_param[2] << " N=" << PID_param[3] << std::endl;
+        }
     }
     std::cout << "Tests completed, plotting results" << std::endl;
 
