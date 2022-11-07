@@ -85,6 +85,11 @@ PID_controller_sim_odeint: PID_controller_sim_odeint.o
 PID_controller_sim_odeint.o: PID_controller_sim_odeint.cpp
 	$(CC) -c $(CCFLAGS) PID_controller_sim_odeint.cpp -o PID_controller_sim_odeint.o
 
+PID_casccontr_sim_odeint: PID_casccontr_sim_odeint.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o PID_casccontr_sim_odeint PID_casccontr_sim_odeint.o $(CCLNFLAGS)
+PID_casccontr_sim_odeint.o: PID_casccontr_sim_odeint.cpp
+	$(CC) -c $(CCFLAGS) PID_casccontr_sim_odeint.cpp -o PID_casccontr_sim_odeint.o
+
 test_AGS_compute_matrices: test_AGS_compute_matrices.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_AGS_compute_matrices test_AGS_compute_matrices.o $(CCLNFLAGS)
 test_AGS_compute_matrices.o: test_AGS_compute_matrices.cpp
@@ -113,12 +118,13 @@ test_lu.o: test_lu.cpp
 all: test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
 	 test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv\
 	 test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint\
-	 test_AGS_compute_matrices test_AGS_controller test_differentiator test_matio test_lu
+	 PID_casccontr_sim_odeint test_AGS_compute_matrices test_AGS_controller test_differentiator test_matio test_lu
 
 clean:
 	@rm -rf *~ *.o *.slxc
 	@rm -rf test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
             test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single\
             test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim\
-            PID_controller_sim_odeint test_AGS_compute_matrices test_AGS_controller test_differentiator test_matio test_lu
+            PID_controller_sim_odeint PID_casccontr_sim_odeint test_AGS_compute_matrices test_AGS_controller\
+            test_differentiator test_matio test_lu
 
