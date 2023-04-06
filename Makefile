@@ -21,9 +21,10 @@ libPOLIMIcontrol.so:
 	$(CCC) -c $(CCFLAGS) continuous_ss.cpp -o continuous_ss.o
 	$(CCC) -c $(CCFLAGS) differentiator.cpp -o differentiator.o
 	$(CCC) -c $(CCFLAGS) ./controller/PID_controller.cpp -o PID_controller.o
+	$(CCC) -c $(CCFLAGS) ./controller/PIDISA_controller.cpp -o PIDISA_controller.o
 	$(CCC) -c $(CCFLAGS) ./controller/AGS_controller.cpp -o AGS_controller.o
 	$(CCC) -c $(CCFLAGS) ./util/matfile_fun.cpp -o matfile_fun.o
-	$(CCC) -shared -Wl,-soname,libPOLIMIcontrol.so -o libPOLIMIcontrol.so FIR_filter.o discrete_tf.o discrete_integrator.o discrete_derivative.o discrete_ss.o continuous_ss.o differentiator.o PID_controller.o AGS_controller.o matfile_fun.o
+	$(CCC) -shared -Wl,-soname,libPOLIMIcontrol.so -o libPOLIMIcontrol.so FIR_filter.o discrete_tf.o discrete_integrator.o discrete_derivative.o discrete_ss.o continuous_ss.o differentiator.o PID_controller.o PIDISA_controller.o AGS_controller.o matfile_fun.o
 
 all: libPOLIMIcontrol.so
 
@@ -35,6 +36,7 @@ install:
 	@mkdir -p $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp libPOLIMIcontrol.so $(DESTDIR)$(PREFIX)/lib
 	@cp ./controller/PID_controller.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
+	@cp ./controller/PIDISA_controller.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp ./controller/AGS_controller.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp ./util/matfile_fun.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
 	@cp FIR_filter.h $(DESTDIR)$(PREFIX)/include/POLIMIcontrol
@@ -55,6 +57,7 @@ uninstall:
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/continuous_ss.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/differentiator.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/PID_controller.h
+	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/PIDISA_controller.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/AGS_controller.h
 	@rm -f $(DESTDIR)$(PREFIX)/include/POLIMIcontrol/matfile_fun.h
 

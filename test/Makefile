@@ -1,10 +1,10 @@
-CCLNFLAGS = -lstdc++ -lMatlabEngine -lMatlabDataArray -lm -lpthread -ldl -lPOLIMIcontrol -lpython3.8 -lmatio
+CCLNFLAGS = -lstdc++ -lMatlabEngine -lMatlabDataArray -lm -lpthread -ldl -lPOLIMIcontrol -lpython3.10 -lmatio
 
-CCLNDIRS = -L/usr/local/MATLAB/R2021a/bin/glnxa64 -L/usr/local/MATLAB/R2022a/extern/bin/glnxa64
+CCLNDIRS = -L/usr/local/MATLAB/R2022b/bin/glnxa64 -L/usr/local/MATLAB/R2022b/extern/bin/glnxa64
 
 CCOPT = -m64 -fexceptions -fPIC -fno-omit-frame-pointer -fno-strict-aliasing -pthread -O2 -fwrapv -DNDEBUG -DIL_STD
 
-CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2022a/extern/include -I/usr/local/MATLAB/R2022a/simulink/include -I/usr/include/eigen3 -I/usr/include/python3.8 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/local/include/POLIMIcontrol
+CCFLAGS = $(CCOPT) -I/usr/local/MATLAB/R2022b/extern/include -I/usr/local/MATLAB/R2022b/simulink/include -I/usr/include/eigen3 -I/usr/include/python3.10 -I/usr/lib/python3/dist-packages/numpy/core/include -I/usr/local/include/POLIMIcontrol
 
 CCC = g++ -O0 -std=c++11
 
@@ -75,6 +75,11 @@ test_PID_controller: test_PID_controller.o
 test_PID_controller.o: test_PID_controller.cpp
 	$(CC) -c $(CCFLAGS) test_PID_controller.cpp -o test_PID_controller.o
 
+test_PIDISA_controller: test_PIDISA_controller.o
+	$(CC) $(CCFLAGS) $(CCLNDIRS) -o test_PIDISA_controller test_PIDISA_controller.o $(CCLNFLAGS)
+test_PIDISA_controller.o: test_PIDISA_controller.cpp
+	$(CC) -c $(CCFLAGS) test_PIDISA_controller.cpp -o test_PIDISA_controller.o
+
 PID_controller_sim: PID_controller_sim.o
 	$(CC) $(CCFLAGS) $(CCLNDIRS) -o PID_controller_sim PID_controller_sim.o $(CCLNFLAGS)
 PID_controller_sim.o: PID_controller_sim.cpp
@@ -117,14 +122,14 @@ test_lu.o: test_lu.cpp
 
 all: test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
 	 test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single test_discrete_ss_lpv\
-	 test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim PID_controller_sim_odeint\
+	 test_continuous_ss_lpv test_FIR_filter test_PID_controller test_PIDISA_controller PID_controller_sim PID_controller_sim_odeint\
 	 PID_casccontr_sim_odeint test_AGS_compute_matrices test_AGS_controller test_differentiator test_matio test_lu
 
 clean:
 	@rm -rf *~ *.o *.slxc
 	@rm -rf test_discrete_tf test_discrete_integrator test_discrete_derivative test_discrete_ss_ti test_continuous_ss_ti\
             test_continuous_ss_ti_single test_discrete_ss_tv test_continuous_ss_tv test_continuous_ss_tv_single\
-            test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter test_PID_controller PID_controller_sim\
+            test_discrete_ss_lpv test_continuous_ss_lpv test_FIR_filter test_PID_controller test_PIDISA_controller PID_controller_sim\
             PID_controller_sim_odeint PID_casccontr_sim_odeint test_AGS_compute_matrices test_AGS_controller\
             test_differentiator test_matio test_lu
 
