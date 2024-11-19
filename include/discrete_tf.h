@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Discrete transfer function class
 //
-// Implements the tranfer function of a discrete time system
+// Implements the transfer function of a discrete time system
 //
 //        b(m) z^m + b(m-1) z^(m-1) + b(m-2) z^(m-2) + ... + b(0)
 // F(z) = -------------------------------------------------------

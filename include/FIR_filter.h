@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FIR filter class
 //
-// Implements the tranfer function of a discrete time FIR filter
+// Implements the transfer function of a discrete time FIR filter
 //
 //        a(n) z^n + a(n-1) z^(n-1) + a(n-2) z^(n-2) + ... + a(0)
 // F(z) = -------------------------------------------------------

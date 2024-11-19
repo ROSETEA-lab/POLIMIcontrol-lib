@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <matio.h>
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 void extractMatrixFromCellarray(Eigen::Ref<Eigen::MatrixXd> matrix, matvar_t **matrixMat, int mat_idx);
 void extractCellArray(std::vector<Eigen::MatrixXd>& matrixVect, matvar_t *cellarrayMat);

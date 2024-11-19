@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
-#include <unsupported/Eigen/MatrixFunctions>
+#include <eigen3/unsupported/Eigen/MatrixFunctions>
 #include <boost/math/special_functions/factorials.hpp>
 
 // Differentiator methods

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Discrete integrator class
 //
-// Implements the tranfer function of a discrete integrator using Forward Euler, Backward Euler or Trapezoidal method
+// Implements the transfer function of a discrete integrator using Forward Euler, Backward Euler or Trapezoidal method
 //
 //  K Ts      K Ts z    K Ts (z+1)
 // ------ ,  ------- , -----------
