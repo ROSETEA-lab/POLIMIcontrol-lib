@@ -1,29 +1,42 @@
-# README #
+# CONTROL-LIB #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+control-lib is a C++ library that implements different tools to support the development and use of controllers and control structures.
 
-### What is this repository for? ###
+The library includes:
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* continuous_ss, a C++ class that implements the state-space form of a linear time-invariant/time-variant/LPV continuous time system
+* discrete_ss, a C++ class that implements the state-space form of a linear time-invariant/time-variant/LPV discrete time system
+* discrete_tf, a C++ class that implements the tranfer function of a discrete time system
+* discrete_FIR, a C++ class that implements the tranfer function of a discrete time FIR filter
+* discrete_integrator, a C++ class that implements the tranfer function of a discrete integrator using Forward Euler, Backward Euler or Trapezoidal method
+* discrete_derivative, a C++ class that implements the tranfer function of a discrete derivative
+* differentiator, a C++ class that implements a robust exact differentiator
 
-### How do I get set up? ###
+and the following controllers:
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* PID
+* ISA PID
+* Advanced Gain Scheduling
 
-### Contribution guidelines ###
+### How to compile this library ###
 
-* Writing tests
-* Code review
-* Other guidelines
+The library can be easily compiled using Cmake 
+```
+cd POLIMIcontrol-lib
+mkdir build
+cd build
+cmake ..
+make
+```
+and then installed in your system folders with
+```
+sudo make install
+```
 
-### Who do I talk to? ###
+### How to use this library ###
 
-* Repo owner or admin
-* Other community or team contact
+To use the library in a Cmake environment add the following line to the CMakeLists.txt
+
+```
+find_package(POLIMIcontrol REQUIRED)
+```
